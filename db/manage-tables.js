@@ -23,14 +23,28 @@ const createTables = () => {
             votes INT DEFAULT 0,
             category VARCHAR REFERENCES categories(slug),
             owner VARCHAR REFERENCES users(username),
-            created_at DEFAULT
+            created_at TIMESTAMP DEFAULT now()
         )`);
+    })
+    .then(() => {
+      return db.query(`
+      CREATE TABLE comments (
+        comment_id SERIAL PRIMARY KEY,
+        author VARCHAR REFERENCES users(username),
+        review_id INT REFERENCES reviews(review_id),
+        votes INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT now(),
+        body VARCHAR
+      )`);
     });
 };
 
 const dropTables = () => {
   return db
-    .query(`DROP TABLE IF EXISTS reviews;`)
+    .query(`DROP TABLE IF EXISTS comments;`)
+    .then(() => {
+      return db.query(`DROP TABLE IF EXISTS reviews;`);
+    })
     .then(() => {
       return db.query(`DROP TABLE IF EXISTS users;`);
     })
@@ -38,6 +52,8 @@ const dropTables = () => {
       return db.query(`DROP TABLE IF EXISTS categories;`);
     });
 };
-//dropTables();
-createTables();
+dropTables();
+//createTables();
 // console.log(Date.now());
+
+module.exports = { dropTables, createTables };
