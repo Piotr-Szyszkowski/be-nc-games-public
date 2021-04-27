@@ -25,9 +25,40 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
       return db.query(insertUserQueryStr);
     })
     .then(() => {
+      const newReviewData = [...reviewData];
+      newReviewData.forEach((obj) => {
+        if (typeof obj.created_at === "number") {
+          const timestamp = new Date(obj.created_at).toISOString();
+          obj.created_at = timestamp;
+        } else {
+          const today = new Date();
+          obj.created_at = today;
+        }
+      });
+      console.log(newReviewData); // logs with correct times
       const insertReviewQueryStr = format(
-        `INSERT INTO reviews (title, review_body, designer, votes, category, owner) VALUES %L RETURNING *;`,
-        [["title", "d", "h", 3, "dexterity", "tickle122"]]
+        `INSERT INTO reviews (title, review_body, designer, votes, category, owner, created_at) VALUES %L RETURNING *;`,
+        newReviewData.map(
+          ({
+            title,
+            review_body,
+            designer,
+            votes,
+            category,
+            owner,
+            created_at,
+          }) => {
+            return [
+              title,
+              review_body,
+              designer,
+              votes,
+              category,
+              owner,
+              created_at,
+            ];
+          }
+        )
       );
       return db.query(insertReviewQueryStr);
     });

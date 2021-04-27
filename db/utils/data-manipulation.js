@@ -13,3 +13,9 @@ const time =
   ":" +
   today.getSeconds();
 console.log(time);
+
+const returnNewTimestamp = () => {
+  const number = 788918400;
+  const timestamp = new Date(number).toISOString();
+  console.log(timestamp);
+};
