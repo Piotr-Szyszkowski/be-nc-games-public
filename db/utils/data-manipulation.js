@@ -10,6 +10,13 @@ const prepareExistingReviewData = (newReviewData) => {
   return newReviewData.map((obj) => {
     const timestamp = new Date(obj.created_at).toISOString();
     obj.created_at = timestamp;
+
+    const defaultUrl =
+      "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg";
+    if (!obj.review_img_url) {
+      obj.review_img_url = defaultUrl;
+    }
+    return obj;
   });
 };
 

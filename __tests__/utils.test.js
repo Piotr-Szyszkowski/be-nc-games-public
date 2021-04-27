@@ -53,4 +53,35 @@ describe(`prepareExistingReviewData()`, () => {
       testReviewInputArray.length
     );
   });
+  it("should return an array of objects, each containing a review_img_url property", () => {
+    const actual = prepareExistingReviewData(testReviewInputArray);
+    actual.forEach((review) => {
+      expect(review).toEqual(
+        expect.objectContaining({
+          title: expect.any(String),
+          review_body: expect.any(String),
+          review_img_url: expect.any(String),
+          designer: expect.any(String),
+          votes: expect.any(Number),
+          category: expect.any(String),
+          owner: expect.any(String),
+          created_at: expect.any(String),
+        })
+      );
+    });
+  });
+  it("should return an array of correctly formatted objects containing correct timestamp and url", () => {
+    const actual = prepareExistingReviewData(testReviewInputArray);
+    expect(actual[1]).toEqual({
+      title: "Jenga",
+      designer: "Leslie Scott",
+      owner: "philippaclaire9",
+      review_img_url:
+        "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg",
+      review_body: "Fiddly fun for all the family",
+      category: "dexterity",
+      created_at: new Date(1610964101251).toISOString(),
+      votes: 5,
+    });
+  });
 });

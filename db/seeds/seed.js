@@ -1,6 +1,8 @@
 const { dropTables, createTables } = require("../manage-tables");
 const format = require("pg-format");
 const db = require("../connection");
+const { prepareExistingReviewData } = require("../utils/data-manipulation");
+
 const seed = function ({ categoryData, commentData, reviewData, userData }) {
   return dropTables()
     .then(() => {
@@ -26,20 +28,12 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
     })
     .then(() => {
       const newReviewData = [...reviewData];
-      return prepareReviewData(newReviewData);
-      newReviewData.forEach((obj) => {
-        if (typeof obj.created_at === "number") {
-          const timestamp = new Date(obj.created_at).toISOString();
-          obj.created_at = timestamp;
-        } else {
-          const today = new Date();
-          obj.created_at = today;
-        }
-      });
-      console.log(newReviewData); // logs with correct times
+      const updatedReviewData = prepareExistingReviewData(newReviewData);
       const insertReviewQueryStr = format(
-        `INSERT INTO reviews (title, review_body, designer, votes, category, owner, created_at) VALUES %L RETURNING *;`,
-        newReviewData.map(
+        `INSERT INTO reviews 
+        (title, review_body, designer, votes, category, owner, created_at, review_img_url) 
+        VALUES %L RETURNING *;`,
+        updatedReviewData.map(
           ({
             title,
             review_body,
@@ -48,6 +42,7 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
             category,
             owner,
             created_at,
+            review_img_url,
           }) => {
             return [
               title,
@@ -57,11 +52,15 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
               category,
               owner,
               created_at,
+              review_img_url,
             ];
           }
         )
       );
       return db.query(insertReviewQueryStr);
+    })
+    .then((x) => {
+      console.log(x);
     });
 };
 
