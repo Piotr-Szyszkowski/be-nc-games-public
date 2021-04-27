@@ -38,7 +38,7 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
             title,
             review_body,
             designer,
-            votes,
+            votes = 0,
             category,
             owner,
             created_at,
@@ -59,8 +59,9 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
       );
       return db.query(insertReviewQueryStr);
     })
-    .then((x) => {
-      console.log(x);
+    .then((reviewsObject) => {
+      const reviews = reviewsObject.rows;
+      const refObject = createRefObject(reviews);
     });
 };
 

@@ -1,11 +1,5 @@
 // extract any functions you are using to manipulate your data, into this file
 
-const returnNewTimestamp = () => {
-  const number = 788918400;
-  const timestamp = new Date(number).toISOString();
-  console.log(timestamp);
-};
-
 const prepareExistingReviewData = (newReviewData) => {
   return newReviewData.map((obj) => {
     const timestamp = new Date(obj.created_at).toISOString();
@@ -20,6 +14,10 @@ const prepareExistingReviewData = (newReviewData) => {
   });
 };
 
+const createRefObject = (reviewArray) => {
+  return {};
+};
+
 // const prepareReviewData = (newReviewData) => {
 //   newReviewData.forEach((obj) => {
 //     if (typeof obj.created_at === "number") {
@@ -32,4 +30,4 @@ const prepareExistingReviewData = (newReviewData) => {
 //   });
 // };
 
-module.exports = { prepareExistingReviewData };
+module.exports = { prepareExistingReviewData, createRefObject };
