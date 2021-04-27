@@ -26,6 +26,7 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
     })
     .then(() => {
       const newReviewData = [...reviewData];
+      return prepareReviewData(newReviewData);
       newReviewData.forEach((obj) => {
         if (typeof obj.created_at === "number") {
           const timestamp = new Date(obj.created_at).toISOString();
