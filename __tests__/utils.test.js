@@ -1,6 +1,7 @@
 const {
   prepareExistingReviewData,
   createRefObject,
+  swapTitleWithId,
 } = require(`../db/utils/data-manipulation`);
 
 const testReviewInputArray = [
@@ -135,5 +136,93 @@ describe(`createRefObject`, () => {
     const actual = createRefObject(reviewArray);
     expect(typeof actual).toBe("object");
     expect(actual).not.toBeInstanceOf(Array);
+  });
+  it("takes an array with a single object should return an object with a single key: value pair", () => {
+    const testArray = [
+      {
+        review_id: 1,
+        title: "Culture a Love of Agriculture With Agricola",
+      },
+    ];
+    const actual = createRefObject(testArray);
+    expect(actual).toEqual({
+      "Culture a Love of Agriculture With Agricola": 1,
+    });
+  });
+  it("takes an array with multiple objects should return an object with multiple key: value pairs", () => {
+    const actual = createRefObject(reviewArray);
+    expect(actual).toEqual({
+      "Culture a Love of Agriculture With Agricola": 1,
+      "JengARRGGGH!": 2,
+      "Karma Karma Chameleon": 3,
+    });
+  });
+});
+describe("swapTitleWithId", () => {
+  it(`takes a reference object and an array of a single object and returns an array with a single object with 
+  the key of belongs_to replaced with the key of review ID and a correctly formatted timestamp`, () => {
+    const testReferenceObject = {
+      "Culture a Love of Agriculture With Agricola": 1,
+      "JengARRGGGH!": 2,
+      "Karma Karma Chameleon": 3,
+    };
+    const testCommentsArray = [
+      {
+        body: "I loved this game too!",
+        belongs_to: "JengARRGGGH!",
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+    ];
+    expect(swapTitleWithId(testReferenceObject, testCommentsArray)).toEqual([
+      {
+        body: "I loved this game too!",
+        review_id: 2,
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: new Date(1511354163389).toISOString(),
+      },
+    ]);
+  });
+  it(`takes a reference object and an array of objects and returns an array of objects with 
+  the key of belongs_to replaced with the key of review ID and a correctly formatted timestamp`, () => {
+    const testReferenceObject = {
+      "Culture a Love of Agriculture With Agricola": 1,
+      "JengARRGGGH!": 2,
+      "Karma Karma Chameleon": 3,
+    };
+    const testCommentsArray = [
+      {
+        body: "I loved this game too!",
+        belongs_to: "JengARRGGGH!",
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: 1511354163389,
+      },
+      {
+        body: "I loved this game too!",
+        belongs_to: "Karma Karma Chameleon",
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: 1511354163374,
+      },
+    ];
+    expect(swapTitleWithId(testReferenceObject, testCommentsArray)).toEqual([
+      {
+        body: "I loved this game too!",
+        review_id: 2,
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: new Date(1511354163389).toISOString(),
+      },
+      {
+        body: "I loved this game too!",
+        review_id: 3,
+        created_by: "happyamy2016",
+        votes: 16,
+        created_at: new Date(1511354163374).toISOString(),
+      },
+    ]);
   });
 });

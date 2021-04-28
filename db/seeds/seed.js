@@ -1,7 +1,11 @@
 const { dropTables, createTables } = require("../manage-tables");
 const format = require("pg-format");
 const db = require("../connection");
-const { prepareExistingReviewData } = require("../utils/data-manipulation");
+const {
+  prepareExistingReviewData,
+  createRefObject,
+  swapTitleWithId,
+} = require("../utils/data-manipulation");
 
 const seed = function ({ categoryData, commentData, reviewData, userData }) {
   return dropTables()
@@ -62,6 +66,10 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
     .then((reviewsObject) => {
       const reviews = reviewsObject.rows;
       const refObject = createRefObject(reviews);
+      const insertReadyCommentData = swapTitleWithId(refObject, commentData);
+      const insertCommentQueryStr = format(
+        `INSERT INTO comments (author, review_id, votes, created_at, body)`
+      );
     });
 };
 
