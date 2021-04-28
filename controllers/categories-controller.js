@@ -1,9 +1,11 @@
 const selectCategories = require("../models/categories-model.js");
 
-const getCategories = (request, response) => {
-  selectCategories(request, response).then((categories) => {
-    response.status(200).send({ categories });
-  });
+const getCategories = (request, response, next) => {
+  selectCategories(request, response)
+    .then((categories) => {
+      response.status(200).send({ categories });
+    })
+    .catch(next);
 };
 
 module.exports = getCategories;

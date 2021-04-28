@@ -31,4 +31,20 @@ describe(`GET /api/categories`, () => {
         expect(response.body.categories).toHaveLength(4);
       });
   });
+  it(`responds with an array of objects displaying required properties`, () => {
+    return request(app)
+      .get("/api/categories")
+      .expect(200)
+      .then((response) => {
+        const categoriesArray = response.body.categories;
+        categoriesArray.forEach((category) => {
+          expect(category).toEqual(
+            expect.objectContaining({
+              slug: expect.any(String),
+              description: expect.any(String),
+            })
+          );
+        });
+      });
+  });
 });

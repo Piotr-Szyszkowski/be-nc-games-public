@@ -4,4 +4,9 @@ const apiRouter = require("./routers/api-router.js");
 
 app.use("/api", apiRouter);
 
+//error handler below
+app.use((error, request, response, next) => {
+  response.status(500).send({ message: "Internal Server Error" });
+});
+
 module.exports = app;
