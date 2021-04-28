@@ -68,8 +68,14 @@ const seed = function ({ categoryData, commentData, reviewData, userData }) {
       const refObject = createRefObject(reviews);
       const insertReadyCommentData = swapTitleWithId(refObject, commentData);
       const insertCommentQueryStr = format(
-        `INSERT INTO comments (author, review_id, votes, created_at, body)`
+        `INSERT INTO comments (author, review_id, votes, created_at, body) VALUES %L;`,
+        insertReadyCommentData.map(
+          ({ created_by, review_id, votes, created_at, body }) => {
+            return [created_by, review_id, votes, created_at, body];
+          }
+        )
       );
+      return db.query(insertCommentQueryStr);
     });
 };
 
