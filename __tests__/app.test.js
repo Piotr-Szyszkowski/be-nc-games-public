@@ -47,4 +47,29 @@ describe(`GET /api/categories`, () => {
         });
       });
   });
+  it(`responds with an array of correct objects`, () => {
+    return request(app)
+      .get("/api/categories")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.categories[2]).toEqual({
+          slug: "dexterity",
+          description: "Games involving physical skill",
+        });
+      });
+  });
+});
+describe(`GET /api/reviews`, () => {
+  it(`status:200, responds wit arrray of review object, each which should have
+      the following properties: owner which is the username from the users table, 
+      title, review_id, review_body, designer, review_img_url, category, created_at,
+      votes`, () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeInstanceOf(Array);
+      });
+  });
 });
