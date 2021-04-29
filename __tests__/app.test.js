@@ -114,4 +114,49 @@ describe(`GET /api/reviews`, () => {
         });
       });
   });
+  it(`test 1 - should accept a "sort_by" query`, () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=designer`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeSortedBy(`designer`, {
+          descending: true,
+        });
+      });
+  });
+  it(`test 2 - should accept a "sort_by" query`, () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=votes`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeSortedBy(`votes`, {
+          descending: true,
+        });
+      });
+  });
+  it(`should accept an "order" query, determining ascending
+      or descending sorting`, () => {
+    return request(app)
+      .get(`/api/reviews?order=asc`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeSortedBy(`created_at`, {
+          descending: false,
+        });
+      });
+  });
+  it(`should accept combined "sort_by" and "order" queries`, () => {
+    return request(app)
+      .get(`/api/reviews?sort_by=designer&order=asc`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeSortedBy(`designer`, {
+          descending: false,
+        });
+      });
+  });
 });

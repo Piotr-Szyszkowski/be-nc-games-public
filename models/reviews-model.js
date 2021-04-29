@@ -1,12 +1,12 @@
 const db = require(`../db/connection`);
 
-const selectReviews = (request, response) => {
+const selectReviews = (sort_by = "created_at", order = "desc") => {
   return db
     .query(
       `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
        FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 
        GROUP BY reviews.review_id 
-       ORDER BY created_at DESC;`
+       ORDER BY ${sort_by} ${order.toUpperCase()};`
     )
     .then((selectReviewsResponse) => {
       return selectReviewsResponse.rows;
