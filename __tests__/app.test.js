@@ -60,7 +60,7 @@ describe(`GET /api/categories`, () => {
   });
 });
 describe(`GET /api/reviews`, () => {
-  it(`status:200, responds wit arrray of review object, each which should have
+  it(`status:200, responds with arrray of review object, each which should have
       the following properties: owner which is the username from the users table, 
       title, review_id, review_body, designer, review_img_url, category, created_at,
       votes`, () => {
@@ -70,6 +70,48 @@ describe(`GET /api/reviews`, () => {
       .then((response) => {
         const returnedAllReviewArray = response.body.reviews;
         expect(returnedAllReviewArray).toBeInstanceOf(Array);
+        expect(returnedAllReviewArray).toHaveLength(13);
+        returnedAllReviewArray.forEach((review) => {
+          expect(review).toEqual(
+            expect.objectContaining({
+              owner: expect.any(String),
+              title: expect.any(String),
+              review_id: expect.any(Number),
+              review_body: expect.any(String),
+              designer: expect.any(String),
+              review_img_url: expect.any(String),
+              category: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it(`status:200, responds with arrray of review object, each which should have
+      comment_count property`, () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        returnedAllReviewArray.forEach((review) => {
+          expect(review).toHaveProperty(`comment_count`);
+          expect(review.comment_count).not.toBe(undefined);
+        });
+
+        expect(returnedAllReviewArray[4].comment_count).toBe(`3`);
+      });
+  });
+  it(`response array by default is sorted descending by date - "created_at"`, () => {
+    return request(app)
+      .get(`/api/reviews`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toBeSortedBy(`created_at`, {
+          descending: true,
+        });
       });
   });
 });
