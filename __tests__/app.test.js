@@ -21,6 +21,7 @@ describe(`GET /api`, () => {
       });
   });
 });
+
 describe(`GET /api/categories`, () => {
   it(`returns status: 200, responds with a 'categories' array of all categories objects`, () => {
     return request(app)
@@ -156,6 +157,34 @@ describe(`GET /api/reviews`, () => {
         const returnedAllReviewArray = response.body.reviews;
         expect(returnedAllReviewArray).toBeSortedBy(`designer`, {
           descending: false,
+        });
+      });
+  });
+  it(`should accept category query, that would only allow display of given
+      game category`, () => {
+    return request(app)
+      .get(`/api/reviews?category=social deduction`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toHaveLength(11);
+        returnedAllReviewArray.forEach((review) => {
+          expect(review.category).toBe(`social deduction`);
+        });
+      });
+  });
+  it(`should accept combined "category", "sort_by" and "order" queries`, () => {
+    return request(app)
+      .get(`/api/reviews?category=social deduction&sort_by=designer&order=asc`)
+      .expect(200)
+      .then((response) => {
+        const returnedAllReviewArray = response.body.reviews;
+        expect(returnedAllReviewArray).toHaveLength(11);
+        returnedAllReviewArray.forEach((review) => {
+          expect(review.category).toBe(`social deduction`);
+          expect(returnedAllReviewArray).toBeSortedBy(`designer`, {
+            descending: false,
+          });
         });
       });
   });
