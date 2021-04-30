@@ -5,5 +5,4 @@ app.listen(PORT, (err) => {
   if (err) {
     throw err;
   }
-  console.log(`Games Server listening on port: ${PORT}`);
 });
