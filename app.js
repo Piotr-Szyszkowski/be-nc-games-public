@@ -16,9 +16,7 @@ app.use((err, request, response, next) => {
   if (err.status && err.message) {
     response.status(err.status).send({ message: err.message });
   }
-  response
-    .status(500)
-    .send({ message: "Internal Server Error - Sorry Dude", error: err });
+  response.status(500).send({ message: "Internal Server Error - Sorry Dude" });
 });
 
 module.exports = app;
