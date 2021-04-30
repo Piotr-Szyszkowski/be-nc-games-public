@@ -5,6 +5,22 @@ const selectReviews = (
   order = "desc",
   category = "%"
 ) => {
+  const okSortByList = [
+    `review_id`,
+    `title`,
+    `designer`,
+    `votes`,
+    `category`,
+    `owner`,
+    `created_at`,
+    `comment_count`,
+  ];
+  if (!okSortByList.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      message: `You cannot sort reviews by ${sort_by}!!`,
+    });
+  }
   return db
     .query(
       `SELECT reviews.*, COUNT(comments.review_id) AS comment_count

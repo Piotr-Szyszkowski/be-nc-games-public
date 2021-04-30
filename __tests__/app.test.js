@@ -3,6 +3,7 @@ const app = require("../app.js");
 const request = require("supertest");
 const testData = require("../db/data/test-data/index");
 const seed = require("../db/seeds/seed");
+const { response } = require("express");
 beforeEach(() => {
   return seed(testData);
 });
@@ -186,6 +187,43 @@ describe(`GET /api/reviews`, () => {
             descending: false,
           });
         });
+      });
+  });
+});
+
+describe(`ERRORS: Non-existant routes`, () => {
+  it(`Test 1 - GET /csi --> status 404 and message`, () => {
+    return request(app)
+      .get(`/csi`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "This is not the route you want to follow"
+        );
+      });
+  });
+  it(`Test 2 - GET /api/sthelse --> status 404 and message`, () => {
+    return request(app)
+      .get(`/api/sthelse`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "This is not the route you want to follow"
+        );
+      });
+  });
+});
+
+describe(`ERRORS: GET /api/reviews`, () => {
+  it(`status: 400 and message if passed an invalid sort_by query`, () => {
+    const invSort = `horsepower`;
+    return request(app)
+      .get(`/api/reviews?sort_by=${invSort}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `You cannot sort reviews by ${invSort}!!`
+        );
       });
   });
 });
