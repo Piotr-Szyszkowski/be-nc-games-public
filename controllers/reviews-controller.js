@@ -11,10 +11,11 @@ const getReviews = (request, response, next) => {
 
 const getReviewsById = (request, response, next) => {
   const { review_id } = request.params;
-  selectReviewsById(review_id).then((review) => {
-    console.log(review);
-    response.status(200).send({ review });
-  });
+  selectReviewsById(review_id)
+    .then((review) => {
+      response.status(200).send({ review });
+    })
+    .catch(next);
 };
 
 module.exports = { getReviews, getReviewsById };

@@ -287,6 +287,31 @@ describe(`ERRORS: GET /api/reviews`, () => {
   });
 });
 
+describe(`ERRORS: GET /api/reviews/:review_id`, () => {
+  it(`status:400 and message if passed with invalid id`, () => {
+    const invalidId = `banana`;
+    return request(app)
+      .get(`/api/reviews/${invalidId}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Unfortunately ${invalidId} is not a valid ID, please use an integer.`
+        );
+      });
+  });
+  it(`status:404, responds with message, when passed with id of review that does not exist in database`, () => {
+    const nonexistantId = `666`;
+    return request(app)
+      .get(`/api/reviews/${nonexistantId}`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Review ID ${nonexistantId} does not exist in our database.`
+        );
+      });
+  });
+});
+
 // expect.objectContaining({
 //   owner: expect.any(String),
 //   title: expect.any(String),
