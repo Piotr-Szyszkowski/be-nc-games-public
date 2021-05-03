@@ -7,6 +7,8 @@ const {
   handleCustomErrors,
 } = require(`./controllers/error-handlers`);
 
+app.use(express.json());
+
 app.use("/api", apiRouter);
 
 /* *** ERROR HANDLER BELOW *** */

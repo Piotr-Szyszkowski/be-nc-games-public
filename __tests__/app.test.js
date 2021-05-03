@@ -217,6 +217,29 @@ describe(`GET /api/reviews/:review_id`, () => {
   });
 });
 
+describe(`PATCH /api/reviews/:review_id`, () => {
+  it(`status:200, accepts an object in the form { inc_votes: newVote }, newVote indicates
+      how much the votes property in the database should be updated by`, () => {
+    return request(app)
+      .patch(`/api/reviews/13`)
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.review).toEqual({
+          review_id: 13,
+          title: "Settlers of Catan: Don't Settle For Less",
+          designer: "Klaus Teuber",
+          owner: "mallionaire",
+          review_body:
+            "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
+          category: "social deduction",
+          created_at: 788918400,
+          votes: 21,
+        });
+      });
+  });
+});
+
 describe(`ERRORS: Non-existant routes`, () => {
   it(`Test 1 - GET /csi --> status 404 and message`, () => {
     return request(app)

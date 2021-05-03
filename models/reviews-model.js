@@ -102,7 +102,9 @@ const selectReviewsById = async (review_id) => {
   return theReview;
 };
 
-module.exports = { selectReviews, selectReviewsById };
+const updateReviewById = (votes) => {};
+
+module.exports = { selectReviews, selectReviewsById, updateReviewById };
 /* working query - for laters
 `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
        FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 
