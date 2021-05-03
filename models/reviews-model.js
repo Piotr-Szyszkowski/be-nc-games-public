@@ -21,6 +21,13 @@ const selectReviews = (
       message: `You cannot sort reviews by ${sort_by}!!`,
     });
   }
+  const okOrderOptions = [`asc`, `desc`];
+  if (!okOrderOptions.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      message: `Invalid "order" format. Please enter "asc" for ascending, or "desc" for descending.`,
+    });
+  }
   return db
     .query(
       `SELECT reviews.*, COUNT(comments.review_id) AS comment_count

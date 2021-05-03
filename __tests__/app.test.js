@@ -226,4 +226,15 @@ describe(`ERRORS: GET /api/reviews`, () => {
         );
       });
   });
+  it(`status: 400 and message if passed an invalid order query`, () => {
+    const invOrder = `ascending`;
+    return request(app)
+      .get(`/api/reviews?order=${invOrder}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Invalid "order" format. Please enter "asc" for ascending, or "desc" for descending.`
+        );
+      });
+  });
 });
