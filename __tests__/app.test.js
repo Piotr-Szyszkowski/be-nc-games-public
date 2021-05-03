@@ -233,7 +233,29 @@ describe(`ERRORS: GET /api/reviews`, () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).toBe(
-          `Invalid "order" format. Please enter "asc" for ascending, or "desc" for descending.`
+          `Invalid <order> format. Please enter <asc> for ascending, or <desc> for descending.`
+        );
+      });
+  });
+  it(`status: 404 and message if passed category that does not exist in database`, () => {
+    const nonexistantCategory = `VR Puzzle Simulation with Samurai Swords`;
+    return request(app)
+      .get(`/api/reviews?category=${nonexistantCategory}`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Category ${nonexistantCategory} does not exist in our database. Please try another one.`
+        );
+      });
+  });
+  it(`status: 404 and message if passed category that exists but does not match any reviews`, () => {
+    const noMatchCategory = `children's games`;
+    return request(app)
+      .get(`/api/reviews?category=${noMatchCategory}`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Category ${noMatchCategory} does not match any reviews in our database. Please try another one.`
         );
       });
   });

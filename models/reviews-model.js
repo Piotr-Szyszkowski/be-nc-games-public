@@ -1,6 +1,6 @@
 const db = require(`../db/connection`);
 
-const selectReviews = (
+const selectReviews = async (
   sort_by = "created_at",
   order = "desc",
   category = "%"
@@ -25,9 +25,42 @@ const selectReviews = (
   if (!okOrderOptions.includes(order)) {
     return Promise.reject({
       status: 400,
-      message: `Invalid "order" format. Please enter "asc" for ascending, or "desc" for descending.`,
+      message: `Invalid <order> format. Please enter <asc> for ascending, or <desc> for descending.`,
     });
   }
+  if (category !== `%`) {
+    const existingCategoriesRaw = await db.query(
+      `SELECT slug FROM categories;`
+    );
+    const existingCategories = existingCategoriesRaw.rows.map(
+      (catObj) => catObj.slug
+    );
+    if (!existingCategories.includes(category)) {
+      return Promise.reject({
+        status: 404,
+        message: `Category ${category} does not exist in our database. Please try another one.`,
+      });
+    }
+    const presentCategoriesRaw = await db.query(
+      `SELECT category FROM reviews;`
+    );
+    const presentCategories = presentCategoriesRaw.rows.map(
+      (catObj) => catObj.category
+    );
+    if (!presentCategories.includes(category)) {
+      return Promise.reject({
+        status: 404,
+        message: `Category ${category} does not match any reviews in our database. Please try another one.`,
+      });
+    }
+  }
+
+  /*return db
+    .query(`SELECT category FROM reviews;`)
+    .then((sth) => {
+      console.log(sth.rows);
+    })*/
+  /*.then(() => {*/
   return db
     .query(
       `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
@@ -36,9 +69,22 @@ const selectReviews = (
        GROUP BY reviews.review_id 
        ORDER BY ${sort_by} ${order.toUpperCase()};`
     )
+
     .then((selectReviewsResponse) => {
       return selectReviewsResponse.rows;
     });
+
+  // return db
+  //   .query(
+  //     `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
+  //      FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id
+  //      WHERE reviews.category LIKE '${category}'
+  //      GROUP BY reviews.review_id
+  //      ORDER BY ${sort_by} ${order.toUpperCase()};`
+  //   )
+  //   .then((selectReviewsResponse) => {
+  //     return selectReviewsResponse.rows;
+  //   });
 };
 
 module.exports = selectReviews;
