@@ -1,4 +1,5 @@
 const db = require(`../db/connection`);
+const format = require(`pg-format`);
 
 const selectReviews = async (
   sort_by = "created_at",
@@ -75,7 +76,20 @@ const selectReviews = async (
     });
 };
 
-module.exports = selectReviews;
+const selectReviewsById = async (review_id) => {
+  let queryString = format(
+    `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews
+  LEFT JOIN comments ON reviews.review_id = comments.review_id
+  WHERE reviews.review_id = %L
+   GROUP BY reviews.review_id;`,
+    [[review_id]]
+  );
+  const reviewWithIdRaw = await db.query(queryString);
+  const theReview = reviewWithIdRaw.rows[0];
+  return theReview;
+};
+
+module.exports = { selectReviews, selectReviewsById };
 /* working query - for laters
 `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
        FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 

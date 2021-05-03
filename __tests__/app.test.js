@@ -73,7 +73,6 @@ describe(`GET /api/reviews`, () => {
         const returnedAllReviewArray = response.body.reviews;
         expect(returnedAllReviewArray).toBeInstanceOf(Array);
         expect(returnedAllReviewArray).toHaveLength(13);
-        console.log(returnedAllReviewArray);
         returnedAllReviewArray.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
@@ -190,9 +189,33 @@ describe(`GET /api/reviews`, () => {
   });
 });
 
-// describe(`GET /api/reviews/:review_id`, () => {
-//   it(``);
-// });
+describe(`GET /api/reviews/:review_id`, () => {
+  it(`status: 200, responds with a review object with requested ID and he following properties: owner which is 
+      the username from the users table, title, review_id, review_body, designer, review_img_url, 
+      category, created_at, votes, comment_count which is the total count of all the comments with 
+      this review_id`, () => {
+    return request(app)
+      .get(`/api/reviews/2`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual({
+          review: {
+            review_id: 2,
+            title: "Jenga",
+            designer: "Leslie Scott",
+            owner: "philippaclaire9",
+            review_body: "Fiddly fun for all the family",
+            category: "dexterity",
+            created_at: `2021-01-18T10:01:41.251Z`,
+            votes: 5,
+            review_img_url:
+              "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            comment_count: "3",
+          },
+        });
+      });
+  });
+});
 
 describe(`ERRORS: Non-existant routes`, () => {
   it(`Test 1 - GET /csi --> status 404 and message`, () => {

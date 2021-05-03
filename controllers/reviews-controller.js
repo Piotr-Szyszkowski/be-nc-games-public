@@ -1,4 +1,4 @@
-const selectReviews = require(`../models/reviews-model`);
+const { selectReviews, selectReviewsById } = require(`../models/reviews-model`);
 
 const getReviews = (request, response, next) => {
   const { sort_by, order, category } = request.query;
@@ -9,4 +9,12 @@ const getReviews = (request, response, next) => {
     .catch(next);
 };
 
-module.exports = getReviews;
+const getReviewsById = (request, response, next) => {
+  const { review_id } = request.params;
+  selectReviewsById(review_id).then((review) => {
+    console.log(review);
+    response.status(200).send({ review });
+  });
+};
+
+module.exports = { getReviews, getReviewsById };
