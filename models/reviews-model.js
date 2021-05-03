@@ -63,28 +63,22 @@ const selectReviews = async (
   /*.then(() => {*/
   return db
     .query(
-      `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
-       FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 
-       WHERE reviews.category LIKE '${category}'
-       GROUP BY reviews.review_id 
-       ORDER BY ${sort_by} ${order.toUpperCase()};`
+      `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.designer, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count
+      FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 
+      WHERE reviews.category LIKE '${category}'
+      GROUP BY reviews.review_id 
+      ORDER BY ${sort_by} ${order.toUpperCase()};`
     )
 
     .then((selectReviewsResponse) => {
       return selectReviewsResponse.rows;
     });
-
-  // return db
-  //   .query(
-  //     `SELECT reviews.*, COUNT(comments.review_id) AS comment_count
-  //      FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id
-  //      WHERE reviews.category LIKE '${category}'
-  //      GROUP BY reviews.review_id
-  //      ORDER BY ${sort_by} ${order.toUpperCase()};`
-  //   )
-  //   .then((selectReviewsResponse) => {
-  //     return selectReviewsResponse.rows;
-  //   });
 };
 
 module.exports = selectReviews;
+/* working query - for laters
+`SELECT reviews.*, COUNT(comments.review_id) AS comment_count
+       FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id 
+       WHERE reviews.category LIKE '${category}'
+       GROUP BY reviews.review_id 
+       ORDER BY ${sort_by} ${order.toUpperCase()};`*/

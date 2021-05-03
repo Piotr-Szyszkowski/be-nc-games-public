@@ -73,15 +73,14 @@ describe(`GET /api/reviews`, () => {
         const returnedAllReviewArray = response.body.reviews;
         expect(returnedAllReviewArray).toBeInstanceOf(Array);
         expect(returnedAllReviewArray).toHaveLength(13);
+        console.log(returnedAllReviewArray);
         returnedAllReviewArray.forEach((review) => {
           expect(review).toEqual(
             expect.objectContaining({
               owner: expect.any(String),
               title: expect.any(String),
               review_id: expect.any(Number),
-              review_body: expect.any(String),
               designer: expect.any(String),
-              review_img_url: expect.any(String),
               category: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
@@ -191,6 +190,10 @@ describe(`GET /api/reviews`, () => {
   });
 });
 
+// describe(`GET /api/reviews/:review_id`, () => {
+//   it(``);
+// });
+
 describe(`ERRORS: Non-existant routes`, () => {
   it(`Test 1 - GET /csi --> status 404 and message`, () => {
     return request(app)
@@ -260,3 +263,15 @@ describe(`ERRORS: GET /api/reviews`, () => {
       });
   });
 });
+
+// expect.objectContaining({
+//   owner: expect.any(String),
+//   title: expect.any(String),
+//   review_id: expect.any(Number),
+//   review_body: expect.any(String),
+//   designer: expect.any(String),
+//   review_img_url: expect.any(String),
+//   category: expect.any(String),
+//   created_at: expect.any(String),
+//   votes: expect.any(Number),
+// })   <-- for laters
