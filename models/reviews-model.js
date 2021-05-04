@@ -109,6 +109,12 @@ const updateReviewById = async (review_id, votes) => {
       message: "Cannot update votes, as no votes provided!",
     });
   }
+  if (!Number.isInteger(votes)) {
+    return Promise.reject({
+      status: 400,
+      message: `Cannot update votes - ${votes} is not an integer.`,
+    });
+  }
   const firstQ = await db.query(
     `UPDATE reviews SET votes = votes + $2 
   WHERE reviews.review_id = $1;`,

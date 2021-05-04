@@ -351,12 +351,36 @@ describe(`ERRORS: PATCH /api/reviews/:review_id`, () => {
   });
   it(`Test 2 - status:400 and message if no "inc_votes" on request body`, () => {
     return request(app)
-      .patch(`/api/reviews/8`)
+      .patch(`/api/reviews/6`)
       .send({})
       .expect(400)
       .then((response) => {
         expect(response.body.message).toBe(
           "Cannot update votes, as no votes provided!"
+        );
+      });
+  });
+  it(`Test 1 - status:400 and message if "inc_votes" is not an integer`, () => {
+    const invalidVotes = "Hulk Hogan";
+    return request(app)
+      .patch(`/api/reviews/8`)
+      .send({ inc_votes: invalidVotes })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Cannot update votes - ${invalidVotes} is not an integer.`
+        );
+      });
+  });
+  it(`Test 2 - status:400 and message if "inc_votes" is not an integer`, () => {
+    const invalidVotes = 65.56;
+    return request(app)
+      .patch(`/api/reviews/5`)
+      .send({ inc_votes: invalidVotes })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Cannot update votes - ${invalidVotes} is not an integer.`
         );
       });
   });
