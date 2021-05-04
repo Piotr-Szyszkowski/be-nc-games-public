@@ -219,7 +219,8 @@ describe(`GET /api/reviews/:review_id`, () => {
 
 describe(`PATCH /api/reviews/:review_id`, () => {
   it(`status:200, accepts an object in the form { inc_votes: newVote }, newVote indicates
-      how much the votes property in the database should be updated by`, () => {
+      how much the votes property in the database should be updated by, responds with complete 
+      review object (updated) inclusive of comment count`, () => {
     return request(app)
       .patch(`/api/reviews/13`)
       .send({ inc_votes: 5 })
@@ -233,8 +234,10 @@ describe(`PATCH /api/reviews/:review_id`, () => {
           review_body:
             "You have stumbled across an uncharted island rich in natural resources, but you are not alone; other adventurers have come ashore too, and the race to settle the island of Catan has begun! Whether you exert military force, build a road to rival the Great Wall, trade goods with ships from the outside world, or some combination of all three, the aim is the same: to dominate the island. Will you prevail? Proceed strategically, trade wisely, and may the odds be in favour.",
           category: "social deduction",
-          created_at: 788918400,
+          created_at: "1970-01-10T02:08:38.400Z",
           votes: 21,
+          comment_count: "0",
+          review_img_url: `https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg`,
         });
       });
   });
@@ -335,14 +338,26 @@ describe(`ERRORS: GET /api/reviews/:review_id`, () => {
   });
 });
 
-// expect.objectContaining({
-//   owner: expect.any(String),
-//   title: expect.any(String),
-//   review_id: expect.any(Number),
-//   review_body: expect.any(String),
-//   designer: expect.any(String),
-//   review_img_url: expect.any(String),
-//   category: expect.any(String),
-//   created_at: expect.any(String),
-//   votes: expect.any(Number),
-// })   <-- for laters
+describe(`ERRORS: PATCH /api/reviews/:review_id`, () => {
+  it(`Test 1 - status:400 and message if no "inc_votes" on request body`, () => {
+    return request(app)
+      .patch(`/api/reviews/6`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Cannot update votes, as no votes provided!"
+        );
+      });
+  });
+  it(`Test 2 - status:400 and message if no "inc_votes" on request body`, () => {
+    return request(app)
+      .patch(`/api/reviews/8`)
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          "Cannot update votes, as no votes provided!"
+        );
+      });
+  });
+});

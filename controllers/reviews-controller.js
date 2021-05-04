@@ -24,6 +24,12 @@ const getReviewsById = (request, response, next) => {
 const patchReviewsById = async (request, response, next) => {
   const { review_id } = request.params;
   const reviewForPatching = await selectReviewsById(review_id);
+  const { inc_votes } = request.body;
+  updateReviewById(review_id, inc_votes)
+    .then((review) => {
+      response.status(200).send({ review });
+    })
+    .catch(next);
 };
 
 module.exports = { getReviews, getReviewsById, patchReviewsById };

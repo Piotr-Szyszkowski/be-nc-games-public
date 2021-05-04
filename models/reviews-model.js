@@ -102,7 +102,28 @@ const selectReviewsById = async (review_id) => {
   return theReview;
 };
 
-const updateReviewById = (votes) => {};
+const updateReviewById = async (review_id, votes) => {
+  if (!votes) {
+    return Promise.reject({
+      status: 400,
+      message: "Cannot update votes, as no votes provided!",
+    });
+  }
+  const firstQ = await db.query(
+    `UPDATE reviews SET votes = votes + $2 
+  WHERE reviews.review_id = $1;`,
+    [review_id, votes]
+  );
+  const secondQ = await db.query(
+    `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews 
+  LEFT JOIN comments ON reviews.review_id = comments.review_id 
+  WHERE reviews.review_id = $1 
+  GROUP BY reviews.review_id;`,
+    [review_id]
+  );
+  const updatedReview = secondQ.rows[0];
+  return updatedReview;
+};
 
 module.exports = { selectReviews, selectReviewsById, updateReviewById };
 /* working query - for laters
