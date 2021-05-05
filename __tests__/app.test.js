@@ -243,6 +243,68 @@ describe(`PATCH /api/reviews/:review_id`, () => {
   });
 });
 
+describe(`GET /api/reviews/:review_id/comments`, () => {
+  it(`test 1 - status:200, responds with an array of comments for the given review_id of which each comment should have 
+      the following properties: comment_id, votes, created_at, author - which is the username from the users 
+      table, and body`, () => {
+    return request(app)
+      .get(`/api/reviews/2/comments`)
+      .expect(200)
+      .then((response) => {
+        const commentArray = response.body.comments;
+        expect(commentArray).toHaveLength(3);
+        commentArray.forEach((commentObj) => {
+          expect(commentObj).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  it(`test 2 - status:200, responds with an array of comments for the given review_id(...)`, () => {
+    return request(app)
+      .get(`/api/reviews/3/comments`)
+      .expect(200)
+      .then((response) => {
+        const commentArray = response.body.comments;
+        const secondComment = commentArray[1];
+        expect(secondComment.comment_id).toBe(3);
+        expect(secondComment.votes).toBe(10);
+        expect(secondComment.author).toBe(`philippaclaire9`);
+        expect(secondComment.body).toBe(`I didn't know dogs could play games`);
+      });
+  });
+});
+
+describe(`POST /api/reviews/:review_id/comments`, () => {
+  it(`status:201, request body accepts username and comment body, responds with the posted comment`, () => {
+    const scytheComment = {
+      username: `dav3rid`,
+      comment_body: `1920s, Eastern Europe and Mechs! What is there not to like!!`,
+    };
+    return request(app)
+      .post(`/api/reviews/12/comments`)
+      .send(scytheComment)
+      .expect(201)
+      .then((response) => {
+        const addedComment = response.body.comment;
+        expect(addedComment.comment_id).toBe(7);
+        expect(addedComment.author).toBe(`dav3rid`);
+        expect(addedComment.review_id).toBe(12);
+        expect(addedComment.votes).toBe(0);
+        expect(addedComment.body).toBe(
+          `1920s, Eastern Europe and Mechs! What is there not to like!!`
+        );
+        expect(addedComment.created_at).not.toBe(undefined);
+      });
+  });
+});
+
 describe(`ERRORS: Non-existant routes`, () => {
   it(`Test 1 - GET /csi --> status 404 and message`, () => {
     return request(app)
