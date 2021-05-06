@@ -3,15 +3,22 @@ const { selectReviewsById } = require(`../models/reviews-model`);
 
 const getComments = async (request, response, next) => {
   const { review_id } = request.params;
-  const checkValidityOfId = await selectReviewsById(review_id);
-  selectComments(review_id).then((commentsFromQuery) => {
-    const comments = commentsFromQuery.rows;
-    response.status(200).send({ comments });
-  });
+  selectComments(review_id)
+    .then((commentsFromQuery) => {
+      if (!commentsFromQuery.rows.length) {
+        return Promise.reject({
+          status: 200,
+          message: `Review ID ${review_id} does not have any comments yet.`,
+        });
+      }
+      const comments = commentsFromQuery.rows;
+      response.status(200).send({ comments });
+    })
+    .catch(next);
 };
+
 const postComments = async (request, response, next) => {
   const { review_id } = request.params;
-  const checkValidityOfId = await selectReviewsById(review_id);
   const { username, comment_body } = request.body;
   const addedCommentRaw = await insertComments(
     review_id,

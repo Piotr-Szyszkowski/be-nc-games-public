@@ -56,12 +56,6 @@ const selectReviews = async (
     }
   }
 
-  /*return db
-    .query(`SELECT category FROM reviews;`)
-    .then((sth) => {
-      console.log(sth.rows);
-    })*/
-  /*.then(() => {*/
   return db
     .query(
       `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.designer, reviews.category, reviews.created_at, reviews.votes, COUNT(comments.review_id) AS comment_count

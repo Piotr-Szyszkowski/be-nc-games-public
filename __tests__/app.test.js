@@ -447,3 +447,39 @@ describe(`ERRORS: PATCH /api/reviews/:review_id`, () => {
       });
   });
 });
+
+describe(`ERRORS: GET /api/reviews/:review_id/comments`, () => {
+  it(`status:400 and message if passed with invalid id`, () => {
+    const invalidId = `Darth Vader`;
+    return request(app)
+      .get(`/api/reviews/${invalidId}/comments`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Unfortunately ${invalidId} is not a valid ID, please use an integer.`
+        );
+      });
+  });
+  it(`status:404, responds with message, when passed with id of review that does not exist in database`, () => {
+    const nonexistantId = `386`;
+    return request(app)
+      .get(`/api/reviews/${nonexistantId}/comments`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Review ID ${nonexistantId} does not exist in our database.`
+        );
+      });
+  });
+  it(`status:200, responds with message, when no comments are available for review ID`, () => {
+    const idWithNoComments = `11`;
+    return request(app)
+      .get(`/api/reviews/${idWithNoComments}/comments`)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Review ID ${idWithNoComments} does not have any comments yet.`
+        );
+      });
+  });
+});

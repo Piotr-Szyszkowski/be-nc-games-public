@@ -1,6 +1,24 @@
 const db = require("../db/connection");
+const selectReviewsById = require(`./reviews-model`);
 
-const selectComments = (review_id) => {
+const selectComments = async (review_id) => {
+  const rex = /^\d+$/g;
+  if (!rex.test(review_id)) {
+    return Promise.reject({
+      status: 400,
+      message: `Unfortunately ${review_id} is not a valid ID, please use an integer.`,
+    });
+  }
+  const reviewWithIdRaw = await db.query(
+    `SELECT * FROM reviews WHERE reviews.review_id = $1;`,
+    [review_id]
+  );
+  if (!reviewWithIdRaw.rows.length) {
+    return Promise.reject({
+      status: 404,
+      message: `Review ID ${review_id} does not exist in our database.`,
+    });
+  }
   return db.query(
     `SELECT * FROM comments 
   WHERE review_id = $1 
