@@ -1,7 +1,6 @@
 const { selectComments, insertComments } = require("../models/comments-model");
-const { selectReviewsById } = require(`../models/reviews-model`);
 
-const getComments = async (request, response, next) => {
+const getComments = (request, response, next) => {
   const { review_id } = request.params;
   selectComments(review_id)
     .then((commentsFromQuery) => {
@@ -17,16 +16,16 @@ const getComments = async (request, response, next) => {
     .catch(next);
 };
 
-const postComments = async (request, response, next) => {
+const postComments = (request, response, next) => {
   const { review_id } = request.params;
   const { username, comment_body } = request.body;
-  const addedCommentRaw = await insertComments(
-    review_id,
-    username,
-    comment_body
-  );
-  const comment = addedCommentRaw.rows[0];
-  response.status(201).send({ comment });
+
+  insertComments(review_id, username, comment_body, next)
+    .then((addedCommentRaw) => {
+      const comment = addedCommentRaw.rows[0];
+      response.status(201).send({ comment });
+    })
+    .catch(next);
 };
 
 module.exports = { getComments, postComments };

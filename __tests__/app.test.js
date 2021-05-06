@@ -483,3 +483,68 @@ describe(`ERRORS: GET /api/reviews/:review_id/comments`, () => {
       });
   });
 });
+
+describe(`ERRORS: POST /api/reviews/:review_id/comments`, () => {
+  it(`status:400 and message if passed with invalid id`, () => {
+    const invalidId = `R2D2`;
+    const scytheComment = {
+      username: `dav3rid`,
+      comment_body: `1920s, Eastern Europe and Mechs! What is there not to like!!`,
+    };
+    return request(app)
+      .post(`/api/reviews/${invalidId}/comments`)
+      .send(scytheComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Unfortunately ${invalidId} is not a valid ID, please use an integer.`
+        );
+      });
+  });
+  it(`status:404, responds with message, when passed with id of review that does not exist in database`, () => {
+    const nonexistantId = `486`;
+    const scytheComment = {
+      username: `dav3rid`,
+      comment_body: `1920s, Eastern Europe and Mechs! What is there not to like!!`,
+    };
+    return request(app)
+      .post(`/api/reviews/${nonexistantId}/comments`)
+      .send(scytheComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Review ID ${nonexistantId} does not exist in our database.`
+        );
+      });
+  });
+  it(`status:404, responds with message, when passed comment by user not in database`, () => {
+    const nonExistantUser = `JCDenton82`;
+    const scytheComment = {
+      username: nonExistantUser,
+      comment_body: `1920s, Eastern Europe and Mechs! What is there not to like!!`,
+    };
+    return request(app)
+      .post(`/api/reviews/12/comments`)
+      .send(scytheComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `User ${nonExistantUser} does not exist in our database. Please register first.`
+        );
+      });
+  });
+  it(`status:400, responds with message when passed with no comment body`, () => {
+    const noBodyComment = {
+      username: `mallionaire`,
+    };
+    return request(app)
+      .post(`/api/reviews/9/comments`)
+      .send(noBodyComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe(
+          `Cannot post. No comment content entered.`
+        );
+      });
+  });
+});
